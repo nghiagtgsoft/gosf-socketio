@@ -1,10 +1,8 @@
 package gosocketio
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
-	"time"
 
 	"github.com/ambelovsky/gosf-socketio/protocol"
 )
@@ -18,6 +16,7 @@ var (
 Send message packet to socket
 */
 func send(msg *protocol.Message, c *Channel, args interface{}) error {
+	log.Println("Sending msg", msg)
 	//preventing json/encoding "index out of range" panic
 	defer func() {
 		if r := recover(); r != nil {
@@ -25,16 +24,17 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 		}
 	}()
 
-	if args != nil {
-		json, err := json.Marshal(&args)
-		if err != nil {
-			return err
-		}
+	// if args != nil {
+	// 	json, err := json.Marshal(&args)
+	// 	if err != nil {
+	// 		return err
+	// 	}
 
-		msg.Args = string(json)
-	}
+	// 	//msg.Args = string(json)
+	// }
 
 	command, err := protocol.Encode(msg)
+	log.Println("WILL SEND", command)
 	if err != nil {
 		return err
 	}
@@ -52,37 +52,37 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 Create packet based on given data and send it
 */
 func (c *Channel) Emit(method string, args interface{}) error {
-	msg := &protocol.Message{
-		Type:   protocol.MessageTypeEmit,
-		Method: method,
-	}
+	// msg := &protocol.Message{
+	// 	Type:   protocol.MessageTypeEmit,
+	// 	Method: method,
+	// }
 
-	return send(msg, c, args)
+	return send(nil, c, args)
 }
 
 /**
 Create ack packet based on given data and send it and receive response
 */
-func (c *Channel) Ack(method string, args interface{}, timeout time.Duration) (string, error) {
-	msg := &protocol.Message{
-		Type:   protocol.MessageTypeAckRequest,
-		AckId:  c.ack.getNextId(),
-		Method: method,
-	}
+// func (c *Channel) Ack(method string, args interface{}, timeout time.Duration) (string, error) {
+// 	msg := &protocol.Message{
+// 		Type:   protocol.MessageTypeAckRequest,
+// 		AckId:  c.ack.getNextId(),
+// 		Method: method,
+// 	}
 
-	waiter := make(chan string)
-	c.ack.addWaiter(msg.AckId, waiter)
+// 	waiter := make(chan string)
+// 	//	c.ack.addWaiter(msg.AckId, waiter)
 
-	err := send(msg, c, args)
-	if err != nil {
-		c.ack.removeWaiter(msg.AckId)
-	}
+// 	err := send(msg, c, args)
+// 	if err != nil {
+// 		//	c.ack.removeWaiter(msg.AckId)
+// 	}
 
-	select {
-	case result := <-waiter:
-		return result, nil
-	case <-time.After(timeout):
-		c.ack.removeWaiter(msg.AckId)
-		return "", ErrorSendTimeout
-	}
-}
+// 	select {
+// 	case result := <-waiter:
+// 		return result, nil
+// 		// case <-time.After(timeout):
+// 		// 	c.ack.removeWaiter(msg.AckId)
+// 		// 	return "", ErrorSendTimeout
+// 	}
+// }

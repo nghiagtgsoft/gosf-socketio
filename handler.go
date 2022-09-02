@@ -1,8 +1,7 @@
 package gosocketio
 
 import (
-	"encoding/json"
-	"reflect"
+	"log"
 	"sync"
 
 	"github.com/ambelovsky/gosf-socketio/protocol"
@@ -63,6 +62,7 @@ func (m *methods) findMethod(method string) (*caller, bool) {
 
 func (m *methods) callLoopEvent(c *Channel, event string) {
 	if m.onConnection != nil && event == OnConnection {
+		log.Println("new connection!", event)
 		m.onConnection(c)
 	}
 	if m.onDisconnection != nil && event == OnDisconnection {
@@ -84,56 +84,18 @@ On ack_req - look for processing function and send ack_resp
 On emit - look for processing function
 */
 func (m *methods) processIncomingMessage(c *Channel, msg *protocol.Message) {
-	switch msg.Type {
-	case protocol.MessageTypeEmit:
-		f, ok := m.findMethod(msg.Method)
-		if !ok {
-			return
-		}
-
-		if !f.ArgsPresent {
-			f.callFunc(c, &struct{}{})
-			return
-		}
-
-		data := f.getArgs()
-		err := json.Unmarshal([]byte(msg.Args), &data)
-		if err != nil {
-			return
-		}
-
-		f.callFunc(c, data)
-
-	case protocol.MessageTypeAckRequest:
-		f, ok := m.findMethod(msg.Method)
-		if !ok || !f.Out {
-			return
-		}
-
-		var result []reflect.Value
-		if f.ArgsPresent {
-			//data type should be defined for unmarshall
-			data := f.getArgs()
-			err := json.Unmarshal([]byte(msg.Args), &data)
-			if err != nil {
-				return
-			}
-
-			result = f.callFunc(c, data)
-		} else {
-			result = f.callFunc(c, &struct{}{})
-		}
-
-		ack := &protocol.Message{
-			Type:  protocol.MessageTypeAckResponse,
-			AckId: msg.AckId,
-		}
-		send(ack, c, result[0].Interface())
-
-	case protocol.MessageTypeAckResponse:
-		waiter, err := c.ack.getWaiter(msg.AckId)
-		if err == nil {
-			waiter <- msg.Args
-		}
+	log.Println("PROCESS INCOMING MESSAGE")
+	switch msg.EngineIoType {
+	case protocol.EngineMessageTypeOpen:
+		m.processOpenMessage(c, msg)
 	}
+}
+
+func (m *methods) processOpenMessage(c *Channel, msg *protocol.Message) {
+	print("PROCESS OPEN")
+	reply := protocol.Message{}
+	reply.EngineIoType = protocol.EngineMessageTypeMessage
+	reply.SocketType = protocol.SocketMessageTypeConnect
+
+	send(&reply, c, nil)
 }

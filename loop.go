@@ -1,11 +1,10 @@
 package gosocketio
 
 import (
-	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/ambelovsky/gosf-socketio/protocol"
 	"github.com/ambelovsky/gosf-socketio/transport"
@@ -47,9 +46,9 @@ type Channel struct {
 	alive     bool
 	aliveLock sync.Mutex
 
-	ack ackProcessor
+	//ack ackProcessor
 
-	server  *Server
+	//server  *Server
 	ip      string
 	request *http.Request
 }
@@ -106,7 +105,7 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 		<-c.out
 	}
 
-	c.out <- protocol.CloseMessage
+	//c.out <- protocol.CloseMessage
 	m.callLoopEvent(c, OnDisconnection)
 
 	deleteOverflooded(c)
@@ -126,19 +125,20 @@ func inLoop(c *Channel, m *methods) error {
 			closeChannel(c, m, protocol.ErrorWrongPacket)
 			return err
 		}
-
-		switch msg.Type {
-		case protocol.MessageTypeOpen:
-			if err := json.Unmarshal([]byte(msg.Source[1:]), &c.header); err != nil {
-				closeChannel(c, m, ErrorWrongHeader)
-			}
-			m.callLoopEvent(c, OnConnection)
-		case protocol.MessageTypePing:
-			c.out <- protocol.PongMessage
-		case protocol.MessageTypePong:
-		default:
-			go m.processIncomingMessage(c, msg)
-		}
+		log.Println(msg)
+		go m.processIncomingMessage(c, msg)
+		// switch msg.Type {
+		// case protocol.MessageTypeOpen:
+		// 	if err := json.Unmarshal([]byte(msg.Source[1:]), &c.header); err != nil {
+		// 		closeChannel(c, m, ErrorWrongHeader)
+		// 	}
+		// 	m.callLoopEvent(c, OnConnection)
+		// case protocol.MessageTypePing:
+		// 	c.out <- protocol.PongMessage
+		// case protocol.MessageTypePong:
+		// default:
+		// 	go m.processIncomingMessage(c, msg)
+		// }
 	}
 }
 
@@ -167,28 +167,13 @@ func outLoop(c *Channel, m *methods) error {
 		}
 
 		msg := <-c.out
-		if msg == protocol.CloseMessage {
-			return nil
-		}
+		// if msg == protocol.CloseMessage {
+		// 	return nil
+		// }
 
 		err := c.conn.WriteMessage(msg)
 		if err != nil {
 			return closeChannel(c, m, err)
 		}
-	}
-}
-
-/**
-Pinger sends ping messages for keeping connection alive
-*/
-func pinger(c *Channel) {
-	interval, _ := c.conn.PingParams()
-	ticker := time.NewTicker(interval)
-	for {
-		<-ticker.C
-		if !c.IsAlive() {
-			return
-		}
-		c.out <- protocol.PingMessage
 	}
 }

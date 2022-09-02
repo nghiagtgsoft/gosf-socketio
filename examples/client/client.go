@@ -21,12 +21,12 @@ type Message struct {
 
 func sendJoin(c *gosocketio.Client) {
 	log.Println("Acking /join")
-	result, err := c.Ack("/join", Channel{"main"}, time.Second*5)
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		log.Println("Ack result to /join: ", result)
-	}
+	//result, err := c.Ack("/join", Channel{"main"}, time.Second*5)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// } else {
+	// 	log.Println("Ack result to /join: ", result)
+	// }
 }
 
 func main() {

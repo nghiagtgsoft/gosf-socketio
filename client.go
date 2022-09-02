@@ -25,6 +25,7 @@ type Client struct {
 Get ws/wss url by host and port
 */
 func GetUrl(host string, port int, secure bool) string {
+
 	var prefix string
 	if secure {
 		prefix = webSocketSecureProtocol
@@ -55,7 +56,7 @@ func Dial(url string, tr transport.Transport) (*Client, error) {
 
 	go inLoop(&c.Channel, &c.methods)
 	go outLoop(&c.Channel, &c.methods)
-	go pinger(&c.Channel)
+	//go pinger(&c.Channel)
 
 	return c, nil
 }

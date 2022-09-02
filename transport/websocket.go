@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -55,7 +56,7 @@ func (wsc *WebsocketConnection) GetMessage() (message string, err error) {
 	if len(text) == 0 {
 		return "", ErrorPacketWrong
 	}
-
+	log.Println("RECEIVED MSG", text)
 	return text, nil
 }
 
