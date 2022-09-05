@@ -2,10 +2,10 @@ package gosocketio
 
 import (
 	"encoding/json"
-	"log"
+	"reflect"
 	"sync"
+	"time"
 
-	"github.com/ambelovsky/gosf-socketio/color"
 	"github.com/ambelovsky/gosf-socketio/protocol"
 )
 
@@ -85,7 +85,6 @@ func (m *methods) processSocketMessage(c *Channel, msg *protocol.Message) {
 	if msg.SocketEvent.EmitName == "" {
 		return
 	}
-	log.Println(color.Cyan + "MSG: " + msg.SocketEvent.EmitName + " VALUE: " + msg.SocketEvent.EmitContent + color.Reset)
 	f, ok := m.findMethod(msg.SocketEvent.EmitName)
 	if !ok {
 		return
@@ -99,12 +98,8 @@ func (m *methods) processSocketMessage(c *Channel, msg *protocol.Message) {
 	data := f.getArgs()
 	err := json.Unmarshal([]byte(msg.SocketEvent.EmitContent), &data)
 	if err != nil {
-		log.Println("ERROR DECODING!!")
-
-		if _, ok := data.(string); ok {
-			f.callFunc(c, ok)
-		} else {
-			return
+		if reflect.TypeOf(data) == reflect.TypeOf(&msg.SocketEvent.EmitContent) { //check if it is ok without JSON encoding, mostly for strings
+			data = &msg.SocketEvent.EmitContent
 		}
 	}
 
@@ -116,6 +111,7 @@ func (m *methods) processPingMessage(c *Channel, msg *protocol.Message) {
 
 	reply := protocol.Message{}
 	reply.EngineIoType = protocol.EngineMessageTypePong
+	reply.SocketType = protocol.SocketMessageTypeNone
 	command, _ := protocol.Encode(&reply)
 	send(command, c)
 
@@ -128,7 +124,7 @@ func (m *methods) processOpenMessage(c *Channel, msg *protocol.Message) {
 
 	command, _ := protocol.Encode(&reply)
 	send(command, c)
-
+	time.Sleep(100 * time.Millisecond) //just to be sure the open message is processed
 	f, _ := m.findMethod(OnConnection)
 
 	f.callFunc(c, &struct{}{})

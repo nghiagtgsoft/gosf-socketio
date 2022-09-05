@@ -57,7 +57,7 @@ func (wsc *WebsocketConnection) GetMessage() (message string, err error) {
 	if len(text) == 0 {
 		return "", ErrorPacketWrong
 	}
-	log.Println(color.Red + "REC: " + text + color.Reset)
+	log.Println(color.Purple + "Received message: " + text + color.Reset)
 	return text, nil
 }
 

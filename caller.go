@@ -2,7 +2,6 @@ package gosocketio
 
 import (
 	"errors"
-	"log"
 	"reflect"
 )
 
@@ -66,7 +65,6 @@ func (c *caller) callFunc(h *Channel, args interface{}) []reflect.Value {
 	if args == nil {
 		args = c.getArgs()
 	}
-	log.Println(reflect.ValueOf(args).Elem())
 	a := []reflect.Value{reflect.ValueOf(h), reflect.ValueOf(args).Elem()}
 	if !c.ArgsPresent {
 		a = a[0:1]

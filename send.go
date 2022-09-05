@@ -17,22 +17,12 @@ var (
 Send message packet to socket
 */
 func send(msg string, c *Channel) error {
-	log.Println("Sending msg", msg)
 	//preventing json/encoding "index out of range" panic
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("socket.io send panic: ", r)
 		}
 	}()
-
-	// if args != nil {
-	// 	json, err := json.Marshal(&args)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	//msg.Args = string(json)
-	// }
 
 	if len(c.out) == queueBufferSize {
 		return ErrorSocketOverflood

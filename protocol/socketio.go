@@ -21,6 +21,10 @@ func typeToText(msgType int) (string, error) {
 func Encode(msg *Message) (string, error) {
 	output := ""
 	output += strconv.Itoa(int(msg.EngineIoType))
+
+	if msg.SocketType == SocketMessageTypeNone {
+		return output, nil
+	}
 	output += strconv.Itoa(int(msg.SocketType))
 	if !(msg.SocketEvent.EmitName == "" || msg.SocketEvent.EmitContent == "") {
 		json, _ := json.Marshal([2]string{msg.SocketEvent.EmitName, msg.SocketEvent.EmitContent})

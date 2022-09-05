@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/ambelovsky/gosf-socketio/color"
 	"github.com/ambelovsky/gosf-socketio/protocol"
 	"github.com/ambelovsky/gosf-socketio/transport"
 )
@@ -125,7 +126,6 @@ func inLoop(c *Channel, m *methods) error {
 			closeChannel(c, m, protocol.ErrorWrongPacket)
 			return err
 		}
-		log.Println(msg)
 		go m.processIncomingMessage(c, msg)
 
 	}
@@ -156,10 +156,8 @@ func outLoop(c *Channel, m *methods) error {
 		}
 
 		msg := <-c.out
-		// if msg == protocol.CloseMessage {
-		// 	return nil
-		// }
 
+		log.Println(color.Purple + "Sending message: " + msg + color.Reset)
 		err := c.conn.WriteMessage(msg)
 		if err != nil {
 			return closeChannel(c, m, err)
