@@ -13,12 +13,16 @@ io.on("connect_error", (err) => {
 
 
 io.on('connection', (socket) => {
+  setTimeout(() => {
+    socket.send("\"HELLO GOLANG!!\"")
+  }, 1000);
     socket.on('disconnect', (socket) => {
       console.log('a user disconnected');
     });
   
     socket.on('message', (message) => {
       console.log('a user says: ' + message);
+      socket.emit('message', "hello YOU!")
     });
   
     console.log('a user connected');

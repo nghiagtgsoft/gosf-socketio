@@ -25,6 +25,7 @@ const (
 	SocketMessageTypeConnectError SocketMessageType = 4
 	SocketMessageTypeBinaryEvent  SocketMessageType = 5
 	SocketMessageTypeBinaryAck    SocketMessageType = 6
+	SocketMessageTypeNone         SocketMessageType = 99
 )
 
 func (e EngineMessageType) String() string {
@@ -37,13 +38,13 @@ func (e EngineMessageType) String() string {
 		return "EngineMessageTypeClose"
 	case
 		EngineMessageTypePing:
-		return "EngineMessageTypeClose"
+		return "EngineMessageTypePing"
 	case
 		EngineMessageTypePong:
-		return "EngineMessageTypeClose"
+		return "EngineMessageTypePong"
 	case
 		EngineMessageTypeMessage:
-		return "EngineMessageTypeClose"
+		return "EngineMessageTypeMessage"
 	}
 	return "Unknown"
 }
@@ -65,6 +66,8 @@ func (e SocketMessageType) String() string {
 		return "SocketMessageTypeBinaryEvent"
 	case SocketMessageTypeBinaryAck:
 		return "SocketMessageTypeBinaryAck"
+	case SocketMessageTypeNone:
+		return "SocketMessageTypeNone"
 	}
 	return "Unknown"
 }
@@ -72,4 +75,12 @@ func (e SocketMessageType) String() string {
 type Message struct {
 	EngineIoType EngineMessageType
 	SocketType   SocketMessageType
+	SocketEvent  SocketEvent
+}
+type SocketEventArray struct {
+	Emit []string
+}
+type SocketEvent struct {
+	EmitName    string
+	EmitContent string
 }

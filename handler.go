@@ -1,9 +1,11 @@
 package gosocketio
 
 import (
+	"encoding/json"
 	"log"
 	"sync"
 
+	"github.com/ambelovsky/gosf-socketio/color"
 	"github.com/ambelovsky/gosf-socketio/protocol"
 )
 
@@ -60,23 +62,6 @@ func (m *methods) findMethod(method string) (*caller, bool) {
 	return nil, false
 }
 
-func (m *methods) callLoopEvent(c *Channel, event string) {
-	if m.onConnection != nil && event == OnConnection {
-		log.Println("new connection!", event)
-		m.onConnection(c)
-	}
-	if m.onDisconnection != nil && event == OnDisconnection {
-		m.onDisconnection(c)
-	}
-
-	f, ok := m.findMethod(event)
-	if !ok {
-		return
-	}
-
-	f.callFunc(c, &struct{}{})
-}
-
 /**
 Check incoming message
 On ack_resp - look for waiter
@@ -84,18 +69,72 @@ On ack_req - look for processing function and send ack_resp
 On emit - look for processing function
 */
 func (m *methods) processIncomingMessage(c *Channel, msg *protocol.Message) {
-	log.Println("PROCESS INCOMING MESSAGE")
 	switch msg.EngineIoType {
 	case protocol.EngineMessageTypeOpen:
 		m.processOpenMessage(c, msg)
+	case protocol.EngineMessageTypePing:
+		m.processPingMessage(c, msg)
+	case protocol.EngineMessageTypeMessage:
+		m.processSocketMessage(c, msg)
+	case protocol.EngineMessageTypeClose:
+		m.processDisconnectMessage(c, msg)
+
 	}
 }
+func (m *methods) processSocketMessage(c *Channel, msg *protocol.Message) {
+	if msg.SocketEvent.EmitName == "" {
+		return
+	}
+	log.Println(color.Cyan + "MSG: " + msg.SocketEvent.EmitName + " VALUE: " + msg.SocketEvent.EmitContent + color.Reset)
+	f, ok := m.findMethod(msg.SocketEvent.EmitName)
+	if !ok {
+		return
+	}
 
+	if !f.ArgsPresent {
+		f.callFunc(c, &struct{}{})
+		return
+	}
+
+	data := f.getArgs()
+	err := json.Unmarshal([]byte(msg.SocketEvent.EmitContent), &data)
+	if err != nil {
+		log.Println("ERROR DECODING!!")
+
+		if _, ok := data.(string); ok {
+			f.callFunc(c, ok)
+		} else {
+			return
+		}
+	}
+
+	f.callFunc(c, data)
+
+}
+
+func (m *methods) processPingMessage(c *Channel, msg *protocol.Message) {
+
+	reply := protocol.Message{}
+	reply.EngineIoType = protocol.EngineMessageTypePong
+	command, _ := protocol.Encode(&reply)
+	send(command, c)
+
+}
 func (m *methods) processOpenMessage(c *Channel, msg *protocol.Message) {
-	print("PROCESS OPEN")
+
 	reply := protocol.Message{}
 	reply.EngineIoType = protocol.EngineMessageTypeMessage
 	reply.SocketType = protocol.SocketMessageTypeConnect
 
-	send(&reply, c, nil)
+	command, _ := protocol.Encode(&reply)
+	send(command, c)
+
+	f, _ := m.findMethod(OnConnection)
+
+	f.callFunc(c, &struct{}{})
+
+}
+func (m *methods) processDisconnectMessage(c *Channel, msg *protocol.Message) {
+	m.onDisconnection(c)
+
 }

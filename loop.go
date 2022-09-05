@@ -106,7 +106,7 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	}
 
 	//c.out <- protocol.CloseMessage
-	m.callLoopEvent(c, OnDisconnection)
+	//m.callLoopEvent(c, OnDisconnection)
 
 	deleteOverflooded(c)
 
@@ -127,18 +127,7 @@ func inLoop(c *Channel, m *methods) error {
 		}
 		log.Println(msg)
 		go m.processIncomingMessage(c, msg)
-		// switch msg.Type {
-		// case protocol.MessageTypeOpen:
-		// 	if err := json.Unmarshal([]byte(msg.Source[1:]), &c.header); err != nil {
-		// 		closeChannel(c, m, ErrorWrongHeader)
-		// 	}
-		// 	m.callLoopEvent(c, OnConnection)
-		// case protocol.MessageTypePing:
-		// 	c.out <- protocol.PongMessage
-		// case protocol.MessageTypePong:
-		// default:
-		// 	go m.processIncomingMessage(c, msg)
-		// }
+
 	}
 }
 

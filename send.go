@@ -1,6 +1,7 @@
 package gosocketio
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 
@@ -15,7 +16,7 @@ var (
 /**
 Send message packet to socket
 */
-func send(msg *protocol.Message, c *Channel, args interface{}) error {
+func send(msg string, c *Channel) error {
 	log.Println("Sending msg", msg)
 	//preventing json/encoding "index out of range" panic
 	defer func() {
@@ -33,17 +34,11 @@ func send(msg *protocol.Message, c *Channel, args interface{}) error {
 	// 	//msg.Args = string(json)
 	// }
 
-	command, err := protocol.Encode(msg)
-	log.Println("WILL SEND", command)
-	if err != nil {
-		return err
-	}
-
 	if len(c.out) == queueBufferSize {
 		return ErrorSocketOverflood
 	}
 
-	c.out <- command
+	c.out <- msg
 
 	return nil
 }
@@ -56,8 +51,21 @@ func (c *Channel) Emit(method string, args interface{}) error {
 	// 	Type:   protocol.MessageTypeEmit,
 	// 	Method: method,
 	// }
+	msg := protocol.Message{
+		EngineIoType: protocol.EngineMessageTypeMessage,
+		SocketType:   protocol.SocketMessageTypeEvent,
+	}
+	content, _ := json.Marshal(args)
+	msg.SocketEvent.EmitName = method
+	msg.SocketEvent.EmitContent = string(content)
 
-	return send(nil, c, args)
+	command, err := protocol.Encode(&msg)
+	if err != nil {
+		return err
+	}
+
+	send(command, c)
+	return nil
 }
 
 /**

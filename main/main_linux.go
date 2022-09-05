@@ -20,7 +20,13 @@ func main() {
 
 	sockClient.On("connection", func(c *gosocketio.Channel) {
 		log.Println("On connection")
-		//sockClient.Emit("yo!", "")
+		sockClient.Emit("message", "hello")
+
+	})
+	sockClient.On("message", func(c *gosocketio.Channel, args string) {
+		log.Println("this is the messgage", args)
+		time.Sleep(100 * time.Second)
+		sockClient.Emit("message", "hello you!")
 	})
 	sockClient.On(gosocketio.OnError, func(c *gosocketio.Channel, e error) {
 		log.Println("Error occurs", e)
@@ -28,6 +34,9 @@ func main() {
 	sockClient.On(gosocketio.OnDisconnection, func(c *gosocketio.Channel) {
 		log.Println("Socket to signalserver disconnected")
 	})
+
+	time.Sleep(5 * time.Second)
+
 	time.Sleep(20 * time.Second)
 	log.Println("Socket.io client to signalsever can't connect ", err)
 

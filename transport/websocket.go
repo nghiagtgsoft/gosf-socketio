@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ambelovsky/gosf-socketio/color"
 	"github.com/gorilla/websocket"
 )
 
@@ -56,7 +57,7 @@ func (wsc *WebsocketConnection) GetMessage() (message string, err error) {
 	if len(text) == 0 {
 		return "", ErrorPacketWrong
 	}
-	log.Println("RECEIVED MSG", text)
+	log.Println(color.Red + "REC: " + text + color.Reset)
 	return text, nil
 }
 
