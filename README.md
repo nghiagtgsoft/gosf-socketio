@@ -1,3 +1,10 @@
+# Socket.io client v4 for golang
+
+We adjusted the original gosocket.io library from [ambelovsky](https://github.com/ambelovsky) so it would support v4 servers. Only the standard client flow (send/receive) is implemented for now. ACK and server flow not supported yet.
+
+
+
+
 golang socket.io
 ================
 
