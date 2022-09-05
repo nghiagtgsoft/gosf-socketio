@@ -1,7 +1,9 @@
 package gosocketio
 
 import (
+	"log"
 	"net"
+	"net/url"
 	"strconv"
 
 	"github.com/ambelovsky/gosf-socketio/transport"
@@ -33,6 +35,21 @@ func GetUrl(host string, port int, secure bool) string {
 		prefix = webSocketProtocol
 	}
 	return prefix + net.JoinHostPort(host, strconv.Itoa(port)) + socketioUrl
+}
+
+func GetUrlByWsLink(socketUrl string) string {
+
+	u, err := url.Parse(socketUrl)
+	host, port, _ := net.SplitHostPort(u.Host)
+
+	portInt, err := strconv.Atoi(port)
+
+	if err != nil {
+		log.Println("Signalserver URL incorrect")
+	}
+	goSocketUrl := GetUrl(host, portInt, u.Scheme == "wss")
+	log.Println("Gosocket url ", goSocketUrl)
+	return goSocketUrl
 }
 
 /**
