@@ -126,7 +126,9 @@ func (m *methods) processOpenMessage(c *Channel, msg *protocol.Message) {
 	send(command, c)
 	time.Sleep(100 * time.Millisecond) //just to be sure the open message is processed
 	f, _ := m.findMethod(OnConnection)
-
+	if f == nil {
+		return
+	}
 	f.callFunc(c, &struct{}{})
 
 }
