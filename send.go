@@ -1,7 +1,6 @@
 package gosocketio
 
 import (
-	"encoding/json"
 	"errors"
 	"log"
 
@@ -45,9 +44,9 @@ func (c *Channel) Emit(method string, args interface{}) error {
 		EngineIoType: protocol.EngineMessageTypeMessage,
 		SocketType:   protocol.SocketMessageTypeEvent,
 	}
-	content, _ := json.Marshal(args)
+	//content, _ := json.Marshal(args)
 	msg.SocketEvent.EmitName = method
-	msg.SocketEvent.EmitContent = string(content)
+	msg.SocketEvent.EmitContent = args
 
 	command, err := protocol.Encode(&msg)
 	if err != nil {

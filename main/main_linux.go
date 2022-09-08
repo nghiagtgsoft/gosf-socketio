@@ -10,7 +10,7 @@ import (
 
 func main() {
 	sockClient, err := gosocketio.Dial(
-		gosocketio.GetUrl("localhost", 8001, false),
+		gosocketio.GetUrl("localhost", 3001, false),
 		transport.GetDefaultWebsocketTransport(),
 	)
 
@@ -20,13 +20,10 @@ func main() {
 
 	sockClient.On("connection", func(c *gosocketio.Channel) {
 		log.Println("On connection")
-		sockClient.Emit("message", "hello")
 
 	})
-	sockClient.On("message", func(c *gosocketio.Channel, args string) {
-		log.Println("this is the messgage", args)
-		time.Sleep(5 * time.Second)
-		//	sockClient.Emit("message", "hello you!")
+	sockClient.On("connectionOpen", func(c *gosocketio.Channel, args string) {
+		sockClient.Emit("connectionOpenResponse", `{"userId": "jonas.delrue@jimber.org", "publicKey": "YX1an214Gbk6QNwOpTYeqsdY+3+JopHA6gwtlT2lrl8="}`)
 	})
 	sockClient.On(gosocketio.OnError, func(c *gosocketio.Channel, e error) {
 		log.Println("Error occurs", e)

@@ -27,7 +27,7 @@ func Encode(msg *Message) (string, error) {
 	}
 	output += strconv.Itoa(int(msg.SocketType))
 	if !(msg.SocketEvent.EmitName == "" || msg.SocketEvent.EmitContent == "") {
-		json, _ := json.Marshal([2]string{msg.SocketEvent.EmitName, msg.SocketEvent.EmitContent})
+		json, _ := json.Marshal([2]interface{}{msg.SocketEvent.EmitName, msg.SocketEvent.EmitContent})
 		output += string(json)
 	}
 

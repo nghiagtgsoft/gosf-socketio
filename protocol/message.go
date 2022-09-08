@@ -82,5 +82,5 @@ type SocketEventArray struct {
 }
 type SocketEvent struct {
 	EmitName    string
-	EmitContent string
+	EmitContent interface{}
 }

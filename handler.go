@@ -96,7 +96,9 @@ func (m *methods) processSocketMessage(c *Channel, msg *protocol.Message) {
 	}
 
 	data := f.getArgs()
-	err := json.Unmarshal([]byte(msg.SocketEvent.EmitContent), &data)
+	str, _ := msg.SocketEvent.EmitContent.(string)
+
+	err := json.Unmarshal([]byte(str), &data)
 	if err != nil {
 		if reflect.TypeOf(data) == reflect.TypeOf(&msg.SocketEvent.EmitContent) { //check if it is ok without JSON encoding, mostly for strings
 			data = &msg.SocketEvent.EmitContent
