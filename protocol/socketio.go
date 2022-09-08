@@ -43,7 +43,7 @@ func MustEncode(msg *Message) string {
 	return result
 }
 
-func getEngineMessageType(data string) (EngineMessageType, error) {
+func GetEngineMessageType(data string) (EngineMessageType, error) {
 	if len(data) == 0 {
 		return 0, ErrorWrongMessageType
 	}
@@ -54,7 +54,7 @@ func getEngineMessageType(data string) (EngineMessageType, error) {
 	return EngineMessageType(msgType), nil
 }
 
-func getSocketMessageType(data string) (SocketMessageType, error) {
+func GetSocketMessageType(data string) (SocketMessageType, error) {
 	if len(data) == 0 {
 		return 0, ErrorWrongMessageType
 	}
@@ -93,34 +93,47 @@ Get message method of current packet, if present
 // func getMethod(text string) (method, restText string, err error) {
 
 // }
-
-func Decode(data string) (*Message, error) {
-
-	msg := &Message{}
-	var err error
-
-	msg.EngineIoType, err = getEngineMessageType(data)
-	log.Println(color.Green + "Engine IO type: (" + data[0:1] + ") " + msg.EngineIoType.String() + color.Reset)
-
-	if msg.EngineIoType == EngineMessageTypeMessage {
-		msg.SocketType, err = getSocketMessageType(data)
-		log.Println(color.Yellow + "Socket IO type: (" + data[1:2] + ") " + msg.SocketType.String() + color.Reset)
-		if msg.SocketType == SocketMessageTypeEvent {
-			jsonevent := data[2:]
-
-			var emit []string
-			json.Unmarshal([]byte(jsonevent), &emit)
-
-			msg.SocketEvent = SocketEvent{EmitName: emit[0], EmitContent: emit[1]}
-		}
-	} else {
-		msg.SocketType = SocketMessageTypeNone
-		log.Println(color.Yellow + "Socket IO type: " + msg.SocketType.String() + color.Reset)
-	}
-
+func GetSocketIoEmitName(data string) string {
+	jsonevent := data[2:]
+	var emit []interface{}
+	err := json.Unmarshal([]byte(jsonevent), &emit)
 	if err != nil {
-		return nil, err
+		log.Println(color.Red + "Error: " + err.Error() + color.Reset)
 	}
-	return msg, nil
-
+	emitNameString, _ := emit[0].(string)
+	return emitNameString
 }
+
+//func Decode(data string, structForEmitContent *interface{}) (*Message, error) {
+
+// msg := &Message{}
+// var err error
+
+// msg.EngineIoType, err = GetEngineMessageType(data)
+// log.Println(color.Green + "Engine IO type: (" + data[0:1] + ") " + msg.EngineIoType.String() + color.Reset)
+// if err != nil {
+// 	return nil, err
+// }
+// if msg.EngineIoType == EngineMessageTypeMessage {
+// 	msg.SocketType, err = getSocketMessageType(data)
+// 	log.Println(color.Yellow + "Socket IO type: (" + data[1:2] + ") " + msg.SocketType.String() + color.Reset)
+// 	if msg.SocketType == SocketMessageTypeEvent {
+// 		jsonevent := data[2:]
+// 		log.Println("jsonevnt", jsonevent)
+// 		var emit []interface{}
+// 		err := json.Unmarshal([]byte(jsonevent), &emit)
+// 		if err != nil {
+// 			log.Println(color.Red + "Error: " + err.Error() + color.Reset)
+// 		}
+// 		emitNameString, _ := emit[0].(string)
+
+// 		msg.SocketEvent = SocketEvent{EmitName: emitNameString, EmitContent: emit[1]}
+// 	}
+// } else {
+// 	msg.SocketType = SocketMessageTypeNone
+// 	log.Println(color.Yellow + "Socket IO type: " + msg.SocketType.String() + color.Reset)
+// }
+
+// return msg, nil
+
+//}

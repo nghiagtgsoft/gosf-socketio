@@ -121,12 +121,16 @@ func inLoop(c *Channel, m *methods) error {
 		if err != nil {
 			return closeChannel(c, m, err)
 		}
-		msg, err := protocol.Decode(pkg)
+		engineIoType, err := protocol.GetEngineMessageType(pkg)
+		log.Println(color.Green + "Engine IO type: " + engineIoType.String() + color.Reset)
+		if err != nil {
+			return err
+		}
 		if err != nil {
 			closeChannel(c, m, protocol.ErrorWrongPacket)
 			return err
 		}
-		go m.processIncomingMessage(c, msg)
+		go m.processIncomingMessage(c, engineIoType, pkg)
 
 	}
 }

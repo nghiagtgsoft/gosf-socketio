@@ -2,10 +2,11 @@ package gosocketio
 
 import (
 	"encoding/json"
-	"reflect"
+	"log"
 	"sync"
 	"time"
 
+	"github.com/ambelovsky/gosf-socketio/color"
 	"github.com/ambelovsky/gosf-socketio/protocol"
 )
 
@@ -68,48 +69,60 @@ On ack_resp - look for waiter
 On ack_req - look for processing function and send ack_resp
 On emit - look for processing function
 */
-func (m *methods) processIncomingMessage(c *Channel, msg *protocol.Message) {
-	switch msg.EngineIoType {
+func (m *methods) processIncomingMessage(c *Channel, engineIoType protocol.EngineMessageType, pkg string) {
+	switch engineIoType {
 	case protocol.EngineMessageTypeOpen:
-		m.processOpenMessage(c, msg)
+		m.processOpenMessage(c)
 	case protocol.EngineMessageTypePing:
-		m.processPingMessage(c, msg)
+		m.processPingMessage(c)
 	case protocol.EngineMessageTypeMessage:
-		m.processSocketMessage(c, msg)
+		m.processSocketMessage(c, pkg)
 	case protocol.EngineMessageTypeClose:
-		m.processDisconnectMessage(c, msg)
+		m.processDisconnectMessage(c)
 
 	}
 }
-func (m *methods) processSocketMessage(c *Channel, msg *protocol.Message) {
-	if msg.SocketEvent.EmitName == "" {
-		return
-	}
-	f, ok := m.findMethod(msg.SocketEvent.EmitName)
-	if !ok {
-		return
-	}
 
-	if !f.ArgsPresent {
-		f.callFunc(c, &struct{}{})
-		return
-	}
-
-	data := f.getArgs()
-	str, _ := msg.SocketEvent.EmitContent.(string)
-
-	err := json.Unmarshal([]byte(str), &data)
+func (m *methods) processSocketMessage(c *Channel, pkg string) {
+	socketType, err := protocol.GetSocketMessageType(pkg)
 	if err != nil {
-		if reflect.TypeOf(data) == reflect.TypeOf(&msg.SocketEvent.EmitContent) { //check if it is ok without JSON encoding, mostly for strings
-			data = &msg.SocketEvent.EmitContent
-		}
+		return
 	}
-
-	f.callFunc(c, data)
+	log.Println(color.Yellow + "Socket IO type: (" + socketType.String() + color.Reset)
+	if socketType == protocol.SocketMessageTypeEvent { //Decode socket.io message type
+		emitName := protocol.GetSocketIoEmitName(pkg)
+		if emitName == "" {
+			return
+		}
+		f, ok := m.findMethod(emitName)
+		if !ok {
+			return
+		}
+		if !f.ArgsPresent {
+			f.callFunc(c, &struct{}{})
+			return
+		}
+		data := f.getArgs()
+		structReceived := []interface{}{"", data}
+		jsonevent := pkg[2:]
+		err := json.Unmarshal([]byte(jsonevent), &structReceived)
+		if err != nil {
+			log.Println(color.Red + "Error: " + err.Error() + color.Reset)
+		}
+		if err != nil {
+			// if reflect.TypeOf(data) == reflect.TypeOf(&data) { //check if it is ok without JSON encoding, mostly for strings
+			// 	data = &data
+			// 	f.callFunc(c, data)
+			// 	return
+			// }
+			log.Println(color.Red + "Decoding error: " + err.Error() + color.Reset)
+		}
+		f.callFunc(c, data)
+	}
 
 }
 
-func (m *methods) processPingMessage(c *Channel, msg *protocol.Message) {
+func (m *methods) processPingMessage(c *Channel) {
 
 	reply := protocol.Message{}
 	reply.EngineIoType = protocol.EngineMessageTypePong
@@ -118,7 +131,7 @@ func (m *methods) processPingMessage(c *Channel, msg *protocol.Message) {
 	send(command, c)
 
 }
-func (m *methods) processOpenMessage(c *Channel, msg *protocol.Message) {
+func (m *methods) processOpenMessage(c *Channel) {
 
 	reply := protocol.Message{}
 	reply.EngineIoType = protocol.EngineMessageTypeMessage
@@ -134,7 +147,7 @@ func (m *methods) processOpenMessage(c *Channel, msg *protocol.Message) {
 	f.callFunc(c, &struct{}{})
 
 }
-func (m *methods) processDisconnectMessage(c *Channel, msg *protocol.Message) {
+func (m *methods) processDisconnectMessage(c *Channel) {
 	m.onDisconnection(c)
 
 }
