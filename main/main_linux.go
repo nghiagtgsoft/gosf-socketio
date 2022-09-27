@@ -10,7 +10,7 @@ import (
 
 func main() {
 	sockClient, err := gosocketio.Dial(
-		gosocketio.GetUrl("localhost", 3001, false),
+		gosocketio.GetUrl("localhost", 8001, false),
 		transport.GetDefaultWebsocketTransport(),
 	)
 

@@ -1,6 +1,7 @@
 package gosocketio
 
 import (
+	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
@@ -23,10 +24,10 @@ var (
 engine.io header to send or receive
 */
 type Header struct {
-	Sid          string   `json:"sid"`
-	Upgrades     []string `json:"upgrades"`
-	PingInterval int      `json:"pingInterval"`
-	PingTimeout  int      `json:"pingTimeout"`
+	Sid          string `json:"sid"`
+	PingInterval int    `json:"pingInterval"`
+	PingTimeout  int    `json:"pingTimeout"`
+	MaxPayload   int    `json:"maxPayload"`
 }
 
 /**
@@ -71,6 +72,14 @@ func (c *Channel) Id() string {
 	return c.header.Sid
 }
 
+func (c *Channel) SetHeader(pkg string) {
+	err := json.Unmarshal([]byte(pkg), &c.header)
+	if err != nil {
+		log.Println(color.Red + "ERROR decoding header: " + err.Error() + color.Reset)
+	}
+
+}
+
 /**
 Checks that Channel is still alive
 */
@@ -92,6 +101,7 @@ func (c *Channel) setAliveValue(value bool) {
 Close channel
 */
 func closeChannel(c *Channel, m *methods, args ...interface{}) error {
+	log.Println("CLOSE")
 	if !c.IsAlive() {
 		//already closed
 		return nil
@@ -108,6 +118,10 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 
 	//c.out <- protocol.CloseMessage
 	//m.callLoopEvent(c, OnDisconnection)
+	f, _ := m.findMethod("disconnection")
+	if f != nil {
+		f.callFunc(c, &struct{}{})
+	}
 
 	deleteOverflooded(c)
 

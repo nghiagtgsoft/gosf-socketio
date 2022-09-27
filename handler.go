@@ -72,7 +72,7 @@ On emit - look for processing function
 func (m *methods) processIncomingMessage(c *Channel, engineIoType protocol.EngineMessageType, pkg string) {
 	switch engineIoType {
 	case protocol.EngineMessageTypeOpen:
-		m.processOpenMessage(c)
+		m.processOpenMessage(c, pkg)
 	case protocol.EngineMessageTypePing:
 		m.processPingMessage(c)
 	case protocol.EngineMessageTypeMessage:
@@ -131,7 +131,9 @@ func (m *methods) processPingMessage(c *Channel) {
 	send(command, c)
 
 }
-func (m *methods) processOpenMessage(c *Channel) {
+func (m *methods) processOpenMessage(c *Channel, pkg string) {
+
+	c.SetHeader(pkg[1:])
 
 	reply := protocol.Message{}
 	reply.EngineIoType = protocol.EngineMessageTypeMessage
