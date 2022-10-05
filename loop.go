@@ -104,6 +104,10 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	log.Println("CLOSE")
 	if !c.IsAlive() {
 		//already closed
+		f, _ := m.findMethod("disconnection")
+		if f != nil {
+			f.callFunc(c, &struct{}{})
+		}
 		return nil
 	}
 
