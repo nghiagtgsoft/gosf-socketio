@@ -101,7 +101,7 @@ func (c *Channel) setAliveValue(value bool) {
 Close channel
 */
 func closeChannel(c *Channel, m *methods, args ...interface{}) error {
-	log.Println("CLOSE")
+	log.Println("Channel closed - calling disconnect")
 
 	f, _ := m.findMethod("disconnection")
 	if f != nil {
