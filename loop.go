@@ -102,13 +102,10 @@ Close channel
 */
 func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	log.Println("CLOSE")
-	if !c.IsAlive() {
-		//already closed
-		f, _ := m.findMethod("disconnection")
-		if f != nil {
-			f.callFunc(c, &struct{}{})
-		}
-		return nil
+
+	f, _ := m.findMethod("disconnection")
+	if f != nil {
+		f.callFunc(c, &struct{}{})
 	}
 
 	c.conn.Close()
@@ -118,13 +115,6 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	//clean outloop
 	for len(c.out) > 0 {
 		<-c.out
-	}
-
-	//c.out <- protocol.CloseMessage
-	//m.callLoopEvent(c, OnDisconnection)
-	f, _ := m.findMethod("disconnection")
-	if f != nil {
-		f.callFunc(c, &struct{}{})
 	}
 
 	deleteOverflooded(c)
