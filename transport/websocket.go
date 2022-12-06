@@ -4,11 +4,9 @@ import (
 	"crypto/tls"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 
-	"github.com/ambelovsky/gosf-socketio/color"
 	"github.com/gorilla/websocket"
 )
 
@@ -57,7 +55,7 @@ func (wsc *WebsocketConnection) GetMessage() (message string, err error) {
 	if len(text) == 0 {
 		return "", ErrorPacketWrong
 	}
-	log.Println(color.Purple + "Received message: " + text + color.Reset)
+	//log.Println(color.Purple + "Received message: " + text + color.Reset)
 	return text, nil
 }
 
