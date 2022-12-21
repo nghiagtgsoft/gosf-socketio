@@ -2,11 +2,11 @@ package gosocketio
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
 	"time"
 
 	"github.com/ambelovsky/gosf-socketio/color"
+	"github.com/ambelovsky/gosf-socketio/logger"
 	"github.com/ambelovsky/gosf-socketio/protocol"
 )
 
@@ -88,7 +88,7 @@ func (m *methods) processSocketMessage(c *Channel, pkg string) {
 	if err != nil {
 		return
 	}
-	log.Println(color.Yellow + "Socket IO type: (" + socketType.String() + color.Reset)
+	logger.LogDebugSocketIo(color.Yellow + "Socket IO type: (" + socketType.String() + color.Reset)
 	if socketType == protocol.SocketMessageTypeEvent { //Decode socket.io message type
 		emitName := protocol.GetSocketIoEmitName(pkg)
 		if emitName == "" {
@@ -107,7 +107,7 @@ func (m *methods) processSocketMessage(c *Channel, pkg string) {
 		jsonevent := pkg[2:]
 		err := json.Unmarshal([]byte(jsonevent), &structReceived)
 		if err != nil {
-			log.Println(color.Red + "Error: " + err.Error() + color.Reset)
+			logger.LogDebug(color.Red + "Error: " + err.Error() + color.Reset)
 		}
 		if err != nil {
 			// if reflect.TypeOf(data) == reflect.TypeOf(&data) { //check if it is ok without JSON encoding, mostly for strings
@@ -115,7 +115,7 @@ func (m *methods) processSocketMessage(c *Channel, pkg string) {
 			// 	f.callFunc(c, data)
 			// 	return
 			// }
-			log.Println(color.Red + "Decoding error: " + err.Error() + color.Reset)
+			logger.LogErrorSocketIo(color.Red + "Decoding error: " + err.Error() + color.Reset)
 		}
 		f.callFunc(c, data)
 	}

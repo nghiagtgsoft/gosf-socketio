@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/ambelovsky/gosf-socketio/color"
+	"github.com/ambelovsky/gosf-socketio/logger"
 	"github.com/ambelovsky/gosf-socketio/protocol"
 	"github.com/ambelovsky/gosf-socketio/transport"
 )
@@ -130,7 +131,7 @@ func inLoop(c *Channel, m *methods) error {
 			return closeChannel(c, m, err)
 		}
 		engineIoType, err := protocol.GetEngineMessageType(pkg)
-		log.Println(color.Green + "Engine IO type: " + engineIoType.String() + color.Reset)
+		logger.LogDebugSocketIo(color.Green + "Engine IO type: " + engineIoType.String() + color.Reset)
 		if err != nil {
 			return err
 		}
@@ -169,7 +170,7 @@ func outLoop(c *Channel, m *methods) error {
 
 		msg := <-c.out
 
-		log.Println(color.Purple + "Sending message: " + msg + color.Reset)
+		//log.Println(color.Purple + "Sending message: " + msg + color.Reset)
 		err := c.conn.WriteMessage(msg)
 		if err != nil {
 			return closeChannel(c, m, err)

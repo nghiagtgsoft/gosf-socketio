@@ -3,10 +3,10 @@ package protocol
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"strconv"
 
 	"github.com/ambelovsky/gosf-socketio/color"
+	"github.com/ambelovsky/gosf-socketio/logger"
 )
 
 var (
@@ -65,75 +65,13 @@ func GetSocketMessageType(data string) (SocketMessageType, error) {
 	return SocketMessageType(msgType), nil
 }
 
-/**
-Get ack id of current packet, if present
-*/
-// func getAck(text string) (ackId int, restText string, err error) {
-// 	if len(text) < 4 {
-// 		return 0, "", ErrorWrongPacket
-// 	}
-// 	text = text[2:]
-
-// 	pos := strings.IndexByte(text, '[')
-// 	if pos == -1 {
-// 		return 0, "", ErrorWrongPacket
-// 	}
-
-// 	ack, err := strconv.Atoi(text[0:pos])
-// 	if err != nil {
-// 		return 0, "", err
-// 	}
-
-// 	return ack, text[pos:], nil
-// }
-
-/**
-Get message method of current packet, if present
-*/
-// func getMethod(text string) (method, restText string, err error) {
-
-// }
 func GetSocketIoEmitName(data string) string {
 	jsonevent := data[2:]
 	var emit []interface{}
 	err := json.Unmarshal([]byte(jsonevent), &emit)
 	if err != nil {
-		log.Println(color.Red + "Error: " + err.Error() + color.Reset)
+		logger.LogErrorSocketIo(color.Red + "Error: " + err.Error() + color.Reset)
 	}
 	emitNameString, _ := emit[0].(string)
 	return emitNameString
 }
-
-//func Decode(data string, structForEmitContent *interface{}) (*Message, error) {
-
-// msg := &Message{}
-// var err error
-
-// msg.EngineIoType, err = GetEngineMessageType(data)
-// log.Println(color.Green + "Engine IO type: (" + data[0:1] + ") " + msg.EngineIoType.String() + color.Reset)
-// if err != nil {
-// 	return nil, err
-// }
-// if msg.EngineIoType == EngineMessageTypeMessage {
-// 	msg.SocketType, err = getSocketMessageType(data)
-// 	log.Println(color.Yellow + "Socket IO type: (" + data[1:2] + ") " + msg.SocketType.String() + color.Reset)
-// 	if msg.SocketType == SocketMessageTypeEvent {
-// 		jsonevent := data[2:]
-// 		log.Println("jsonevnt", jsonevent)
-// 		var emit []interface{}
-// 		err := json.Unmarshal([]byte(jsonevent), &emit)
-// 		if err != nil {
-// 			log.Println(color.Red + "Error: " + err.Error() + color.Reset)
-// 		}
-// 		emitNameString, _ := emit[0].(string)
-
-// 		msg.SocketEvent = SocketEvent{EmitName: emitNameString, EmitContent: emit[1]}
-// 	}
-// } else {
-// 	msg.SocketType = SocketMessageTypeNone
-// 	log.Println(color.Yellow + "Socket IO type: " + msg.SocketType.String() + color.Reset)
-// }
-
-// return msg, nil
-
-//}

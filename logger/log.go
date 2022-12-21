@@ -13,11 +13,11 @@ func LogDebug(logLine string) {
 	}
 }
 
-func logDebugSocketIo(logLine string) {
+func LogDebugSocketIo(logLine string) {
 	if os.Getenv("DEBUG_SOCKETIO") == "true" {
 		log.Println(color.Red + logLine + color.Reset)
 	}
 }
-func logErrorSocketIo(logLine string) {
+func LogErrorSocketIo(logLine string) {
 	log.Println(color.Red + logLine + color.Reset)
 }
