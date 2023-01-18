@@ -14,9 +14,9 @@ const (
 	upgradeFailed = "Upgrade failed: "
 
 	WsDefaultPingInterval   = 30 * time.Second
-	WsDefaultPingTimeout    = 5 * time.Second
-	WsDefaultReceiveTimeout = 5 * time.Second
-	WsDefaultSendTimeout    = 5 * time.Second
+	WsDefaultPingTimeout    = 10 * time.Second
+	WsDefaultReceiveTimeout = 10 * time.Second
+	WsDefaultSendTimeout    = 10 * time.Second
 	WsDefaultBufferSize     = 1024 * 32
 )
 
