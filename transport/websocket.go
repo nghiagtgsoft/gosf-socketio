@@ -14,9 +14,9 @@ const (
 	upgradeFailed = "Upgrade failed: "
 
 	WsDefaultPingInterval   = 30 * time.Second
-	WsDefaultPingTimeout    = 60 * time.Second
-	WsDefaultReceiveTimeout = 60 * time.Second
-	WsDefaultSendTimeout    = 60 * time.Second
+	WsDefaultPingTimeout    = 30 * time.Second
+	WsDefaultReceiveTimeout = 30 * time.Second
+	WsDefaultSendTimeout    = 30 * time.Second
 	WsDefaultBufferSize     = 1024 * 32
 )
 
@@ -122,12 +122,14 @@ func (wst *WebsocketTransport) HandleConnection(
 	return &WebsocketConnection{socket, wst}, nil
 }
 
-/**
+/*
+*
 Websocket connection do not require any additional processing
 */
 func (wst *WebsocketTransport) Serve(w http.ResponseWriter, r *http.Request) {}
 
-/**
+/*
+*
 Returns websocket connection with default params
 */
 func GetDefaultWebsocketTransport() *WebsocketTransport {
