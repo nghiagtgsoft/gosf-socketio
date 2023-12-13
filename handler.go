@@ -16,12 +16,14 @@ const (
 	OnError         = "error"
 )
 
-/**
+/*
+*
 System handler function for internal event processing
 */
 type systemHandler func(c *Channel)
 
-/**
+/*
+*
 Contains maps of message processing functions
 */
 type methods struct {
@@ -32,14 +34,18 @@ type methods struct {
 	onDisconnection systemHandler
 }
 
-/**
+/*
+*
 create messageHandlers map
 */
 func (m *methods) initMethods() {
 	//m.messageHandlers = make(sync.Map)
+	m.messageHandlers = sync.Map{}
+
 }
 
-/**
+/*
+*
 Add message processing function, and bind it to given method
 */
 func (m *methods) On(method string, f interface{}) error {
@@ -52,7 +58,8 @@ func (m *methods) On(method string, f interface{}) error {
 	return nil
 }
 
-/**
+/*
+*
 Find message processing function associated with given method
 */
 func (m *methods) findMethod(method string) (*caller, bool) {
@@ -63,7 +70,8 @@ func (m *methods) findMethod(method string) (*caller, bool) {
 	return nil, false
 }
 
-/**
+/*
+*
 Check incoming message
 On ack_resp - look for waiter
 On ack_req - look for processing function and send ack_resp

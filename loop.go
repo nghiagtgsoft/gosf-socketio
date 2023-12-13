@@ -119,6 +119,7 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 
 	deleteOverflooded(c)
 	f, _ := m.findMethod("disconnection")
+	m.initMethods()
 	if f != nil {
 		f.callFunc(c, &struct{}{})
 	}
