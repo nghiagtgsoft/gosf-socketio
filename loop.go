@@ -109,7 +109,7 @@ Close channel
 */
 func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	log.Println("Channel closed - calling disconnect")
-
+	c.conn.Close()
 	c.setAliveValue(false)
 
 	//clean outloop
