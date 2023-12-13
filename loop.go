@@ -21,7 +21,8 @@ var (
 	ErrorWrongHeader = errors.New("Wrong header")
 )
 
-/**
+/*
+*
 engine.io header to send or receive
 */
 type Header struct {
@@ -31,7 +32,8 @@ type Header struct {
 	MaxPayload   int    `json:"maxPayload"`
 }
 
-/**
+/*
+*
 socket.io connection handler
 
 use IsAlive to check that handler is still working
@@ -56,7 +58,8 @@ type Channel struct {
 	request *http.Request
 }
 
-/**
+/*
+*
 create channel, map, and set active
 */
 func (c *Channel) initChannel() {
@@ -66,7 +69,8 @@ func (c *Channel) initChannel() {
 	c.setAliveValue(true)
 }
 
-/**
+/*
+*
 Get id of current socket connection
 */
 func (c *Channel) Id() string {
@@ -81,7 +85,8 @@ func (c *Channel) SetHeader(pkg string) {
 
 }
 
-/**
+/*
+*
 Checks that Channel is still alive
 */
 func (c *Channel) IsAlive() bool {
@@ -98,18 +103,17 @@ func (c *Channel) setAliveValue(value bool) {
 	c.aliveLock.Unlock()
 }
 
-/**
+/*
+*
 Close channel
 */
 func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	log.Println("Channel closed - calling disconnect")
-
+	c.conn.Close()
 	f, _ := m.findMethod("disconnection")
 	if f != nil {
 		f.callFunc(c, &struct{}{})
 	}
-
-	c.conn.Close()
 
 	c.setAliveValue(false)
 
@@ -123,7 +127,7 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	return nil
 }
 
-//incoming messages loop, puts incoming messages to In channel
+// incoming messages loop, puts incoming messages to In channel
 func inLoop(c *Channel, m *methods) error {
 	for {
 		pkg, err := c.conn.GetMessage()
@@ -154,7 +158,8 @@ func storeOverflow(c *Channel) {
 	overflooded.Store(c, struct{}{})
 }
 
-/**
+/*
+*
 outgoing messages loop, sends messages from channel to socket
 */
 func outLoop(c *Channel, m *methods) error {
