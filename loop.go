@@ -109,11 +109,6 @@ Close channel
 */
 func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	log.Println("Channel closed - calling disconnect")
-	c.conn.Close()
-	f, _ := m.findMethod("disconnection")
-	if f != nil {
-		f.callFunc(c, &struct{}{})
-	}
 
 	c.setAliveValue(false)
 
@@ -123,6 +118,10 @@ func closeChannel(c *Channel, m *methods, args ...interface{}) error {
 	}
 
 	deleteOverflooded(c)
+	f, _ := m.findMethod("disconnection")
+	if f != nil {
+		f.callFunc(c, &struct{}{})
+	}
 
 	return nil
 }
