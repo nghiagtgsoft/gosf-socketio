@@ -15,7 +15,8 @@ const (
 	socketioUrl             = "/socket.io/?EIO=4&transport=websocket"
 )
 
-/**
+/*
+*
 Socket.io client representation
 */
 type Client struct {
@@ -23,7 +24,8 @@ type Client struct {
 	Channel
 }
 
-/**
+/*
+*
 Get ws/wss url by host and port
 */
 func GetUrl(host string, port int, secure bool) string {
@@ -52,7 +54,8 @@ func GetUrlByWsLink(socketUrl string) string {
 	return goSocketUrl
 }
 
-/**
+/*
+*
 connect to host and initialise socket.io protocol
 
 The correct ws protocol url example:
@@ -78,7 +81,8 @@ func Dial(url string, tr transport.Transport) (*Client, error) {
 	return c, nil
 }
 
-/**
+/*
+*
 Close client connection
 */
 func (c *Client) Close() {
