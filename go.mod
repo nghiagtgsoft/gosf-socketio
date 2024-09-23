@@ -1,4 +1,4 @@
-module github.com/jimbertools/gosf-socketio
+module github.com/nghiagtgsoft/gosf-socketio
 
 go 1.18
 
