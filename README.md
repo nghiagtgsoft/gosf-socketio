@@ -1,6 +1,6 @@
 # Socket.io client v4 for golang
 
-We adjusted the original gosocket.io library from [ambelovsky](https://github.com/ambelovsky) so it would support v4 servers. Only the standard client flow (send/receive) is implemented for now. ACK and server flow not supported yet.
+We adjusted the original gosocket.io library from [ambelovsky](https://github.com/nghiagtgsoft) so it would support v4 servers. Only the standard client flow (send/receive) is implemented for now. ACK and server flow not supported yet.
 
 
 
@@ -10,10 +10,10 @@ golang socket.io
 
 GoLang implementation of [socket.io](http://socket.io) library, client and server.
 
-This library is maintained for [GOSF](https://github.com/ambelovsky/gosf), the GoLang SocketIO Framework.
+This library is maintained for [GOSF](https://github.com/nghiagtgsoft/gosf), the GoLang SocketIO Framework.
 
 This library was built with contributions by:
-- [ambelovsky](https://github.com/ambelovsky)
+- [ambelovsky](https://github.com/nghiagtgsoft)
 - [joaopandolfi](https://github.com/joaopandolfi)
 
 Examples directory contains simple client and server.
@@ -21,7 +21,7 @@ Examples directory contains simple client and server.
 ### Get It
 
 ```sh
-go get -u github.com/ambelovsky/gosf-socketio
+go get -u github.com/nghiagtgsoft/gosf-socketio
 ```
 
 ### Simple server usage

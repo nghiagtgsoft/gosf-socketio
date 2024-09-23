@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ambelovsky/gosf-socketio/color"
-	"github.com/ambelovsky/gosf-socketio/logger"
-	"github.com/ambelovsky/gosf-socketio/protocol"
+	"github.com/nghiagtgsoft/gosf-socketio/color"
+	"github.com/nghiagtgsoft/gosf-socketio/logger"
+	"github.com/nghiagtgsoft/gosf-socketio/protocol"
 )
 
 const (

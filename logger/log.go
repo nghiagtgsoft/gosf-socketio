@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/ambelovsky/gosf-socketio/color"
+	"github.com/nghiagtgsoft/gosf-socketio/color"
 )
 
 func LogDebug(logLine string) {

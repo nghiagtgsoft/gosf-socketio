@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/ambelovsky/gosf-socketio/color"
-	"github.com/ambelovsky/gosf-socketio/logger"
-	"github.com/ambelovsky/gosf-socketio/protocol"
-	"github.com/ambelovsky/gosf-socketio/transport"
+	"github.com/nghiagtgsoft/gosf-socketio/color"
+	"github.com/nghiagtgsoft/gosf-socketio/logger"
+	"github.com/nghiagtgsoft/gosf-socketio/protocol"
+	"github.com/nghiagtgsoft/gosf-socketio/transport"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/ambelovsky/gosf-socketio/protocol"
+	"github.com/nghiagtgsoft/gosf-socketio/protocol"
 )
 
 var (
@@ -12,7 +12,8 @@ var (
 	ErrorSocketOverflood = errors.New("Socket overflood")
 )
 
-/**
+/*
+*
 Send message packet to socket
 */
 func send(msg string, c *Channel) error {
@@ -32,7 +33,8 @@ func send(msg string, c *Channel) error {
 	return nil
 }
 
-/**
+/*
+*
 Create packet based on given data and send it
 */
 func (c *Channel) Emit(method string, args interface{}) error {

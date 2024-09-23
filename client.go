@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/ambelovsky/gosf-socketio/transport"
+	"github.com/nghiagtgsoft/gosf-socketio/transport"
 )
 
 const (

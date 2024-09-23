@@ -12,8 +12,8 @@ package gosocketio
 // 	"sync"
 // 	"time"
 
-// 	"github.com/ambelovsky/gosf-socketio/protocol"
-// 	"github.com/ambelovsky/gosf-socketio/transport"
+// 	"github.com/nghiagtgsoft/gosf-socketio/protocol"
+// 	"github.com/nghiagtgsoft/gosf-socketio/transport"
 // )
 
 // const (

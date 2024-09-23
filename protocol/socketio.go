@@ -5,8 +5,8 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/ambelovsky/gosf-socketio/color"
-	"github.com/ambelovsky/gosf-socketio/logger"
+	"github.com/nghiagtgsoft/gosf-socketio/color"
+	"github.com/nghiagtgsoft/gosf-socketio/logger"
 )
 
 var (
